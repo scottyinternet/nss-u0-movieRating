@@ -15,6 +15,7 @@ public class App {
         RatingReader ratingReader = new RatingReader("move-ratings-test.csv");
 
         List<Rating> list = ratingReader.getAllRatings();
+        printAllRatings(list);
         averageRating(list);
 
         //PRINT LIST to confirm working
@@ -29,7 +30,18 @@ public class App {
 
     }  // E N D   O F   M A I N 
 
-   public static void averageRating(List<Rating> list){
+
+    //  M E T H O D S
+
+    //  P R I N T   A L L   R A T I N G S 
+    public static void printAllRatings(List<Rating> list){
+        for (Rating r : list) {
+            System.out.println(r);
+        }
+    }
+
+    //  to do A V E R A G E   R A T I N G
+    public static void averageRating(List<Rating> list){
         Map<String, List<Integer>> averageRatings = new HashMap<String, List<Integer>>();
 
         //Populate Map
@@ -41,25 +53,50 @@ public class App {
             averageRatings.get(r.getMovieName()).add(r.getMovieRating());
         }
 
-
             //PRINT MAP (WITHIN METHOD)
             for(String title : averageRatings.keySet()){
-                System.out.println(title);
+                System.out.println("Movie Name     : " + title);
                 int numOfRatings = averageRatings.get(title).size();
-                int totalRating = 0;
+                Double totalRating = 0.0;
 
                 for (int i : averageRatings.get(title)){
                     totalRating += i;
                 }
                 double avgRating = totalRating / numOfRatings;
-                System.out.println(avgRating);
+                System.out.println("Average Rating : " + avgRating);
+                System.out.println("");
             }
 
 
 
         }
 
+    //  to do H I G H E S T   R A T E R 
+    public static void highestRater(List<Rating> list){
+        /* DESIRED OUTPUT
+        Movie Name    : The Godfather
+        Highest Rater : Aurie Golton, Rhett Basset
+        
+        Movie Name    : The Shawshank Redemption
+        Highest Rater : Arlen Tubb
+        
+        Movie Name    : Schindler's Lists
+        Highest Rater : Paquito Blunderfifle
+        */
+    }
 
+    public static void raterAverage(List<Rating> list){
+        /* DESIRED OUTPUT
+        Rater      : Aurie Golton
+        Avg Rating : 9.3
+
+        Rater      : Laurel McAirt
+        Avg Rating : 9.0
+
+        Rater      : Margaret Shone
+        Avg Rating : 8.5
+         */
+    }
 
    }
    
