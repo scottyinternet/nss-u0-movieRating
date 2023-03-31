@@ -1,0 +1,27 @@
+@startuml
+title Movie Ratings Class Diagram
+
+class App {
+    + {static} main(String[]) : void
+    + {static} averageRatings(List<Rating>) : Map<String, int>
+    + {static} highestRater(List<Rating>) : Map<String, String>
+    + {static} topTenRaters(List<Rating>) : Map<String, int>
+}
+
+class Rating {
+    - movieName: String
+    - raterName: String
+    - movieRating : int
+
+    + toString() : String
+}
+
+class RatingReader {
+    - filename : String
+
+    + getAllRatings() : List<Rating>
+}
+
+RatingReader *-- App
+Rating o-- RatingReader
+@enduml
