@@ -6,51 +6,43 @@ import java.io.IOException;
 import java.util.*;
 
 public class App {
-        // Map<String, Integer> averageRatings; 
-        // Map<String, String> highestRater;
-        // Map<String, Integer> topTenRaters;
-
-
     public static void main(String[] args) throws IOException {
-        RatingReader ratingReader = new RatingReader("move-ratings-test.csv");
+        RatingReader ratingReader = new RatingReader("movie-ratings.csv");
 
         List<Rating> list = ratingReader.getAllRatings();
         printAllRatings(list);
         averageRating(list);
+        highestRater(list);
+        raterAverage(list);
 
-        //PRINT LIST to confirm working
-        // for (Rating r : list) {
-        //     System.out.println(r);
-        // }
-
+    }  //  - - - -  E N D   O F   M A I N  - - - -   
 
 
-
-
-
-    }  // E N D   O F   M A I N 
-
-
-    //  M E T H O D S
-
-    //  P R I N T   A L L   R A T I N G S 
+    //  P R I N T   A L L   R A T I N G S    (checks if RatingReader populated rating list)  
     public static void printAllRatings(List<Rating> list){
+        System.out.println("");
+        System.out.println(" - - - - -  P R I N T   A L L   R A T I N G S  - - - - - ");
+        System.out.println("");
+
         for (Rating r : list) {
             System.out.println(r);
         }
     }
 
-    //  to do A V E R A G E   R A T I N G
+    //  A V E R A G E   R A T I N G
     public static void averageRating(List<Rating> list){
         Map<String, List<Integer>> averageRatings = new HashMap<String, List<Integer>>();
+        System.out.println("");
+        System.out.println(" - - - - -  A V E R A G E   R A T I N G  - - - - - ");
+        System.out.println("");
 
         //Populate Map
         for (Rating r :list){
             String movieName = r.getMovieName();
             if (!averageRatings.containsKey(movieName)) {
-                averageRatings.put(r.getMovieName(), new ArrayList<Integer>());
+                averageRatings.put(movieName, new ArrayList<Integer>());
             }
-            averageRatings.get(r.getMovieName()).add(r.getMovieRating());
+            averageRatings.get(movieName).add(r.getMovieRating());
         }
 
             //PRINT MAP (WITHIN METHOD)
@@ -64,41 +56,98 @@ public class App {
                 }
                 double avgRating = totalRating / numOfRatings;
                 System.out.println("Average Rating : " + avgRating);
-                System.out.println("");
+                System.out.println("");                
             }
-
-
-
         }
 
-    //  to do H I G H E S T   R A T E R 
+    //  H I G H E S T   R A T E R 
     public static void highestRater(List<Rating> list){
-        /* DESIRED OUTPUT
-        Movie Name    : The Godfather
-        Highest Rater : Aurie Golton, Rhett Basset
-        
-        Movie Name    : The Shawshank Redemption
-        Highest Rater : Arlen Tubb
-        
-        Movie Name    : Schindler's Lists
-        Highest Rater : Paquito Blunderfifle
-        */
-    }
+        Map<String, List<Rating>> highestRaterMap = new HashMap<>();
+        System.out.println("");
+        System.out.println(" - - - - -  H I G H E S T   R A T E R  - - - - - ");
+        System.out.println("");
 
+
+        //populate map
+        for(Rating r : list){
+            String movieName = r.getMovieName();   
+            int movieRating = r.getMovieRating();
+        
+            if(!highestRaterMap.containsKey(movieName)){
+                highestRaterMap.put(movieName, new ArrayList<Rating>());
+                highestRaterMap.get(movieName).add(r);
+            }
+            else {
+                int currentHigh = highestRaterMap.get(movieName).get(0).getMovieRating();
+
+                //clear if new high
+                if (movieRating > currentHigh){
+                    highestRaterMap.get(movieName).clear();
+                }
+                //set if new high or equal high
+                if (movieRating >= currentHigh){
+                    highestRaterMap.get(movieName).add(r);
+                }
+                //do nothing if rating less than current high
+            }
+        }
+
+        //print map
+        for(String title : highestRaterMap.keySet()){
+            System.out.println("Movie Name    : " + title);
+
+            String output = "";
+            for(Rating r : highestRaterMap.get(title)){
+                if(output.equals("")){
+                    output = r.getRaterName();
+                } else {
+                    output = output + ", " + r.getRaterName();
+                }
+            }
+            System.out.println("Highest Rater : " + output);
+            System.out.println("");
+        }
+    } 
+
+    //  R A T E R   A V E R A G E
     public static void raterAverage(List<Rating> list){
-        /* DESIRED OUTPUT
-        Rater      : Aurie Golton
-        Avg Rating : 9.3
+        Map<String, List<Integer>> raterAverageMap = new HashMap<String, List<Integer>>();
 
-        Rater      : Laurel McAirt
-        Avg Rating : 9.0
+        //Populate Map
+        for (Rating r :list){
+            String raterName = r.getRaterName();
+            if (!raterAverageMap.containsKey(raterName)) {
+                raterAverageMap.put(raterName, new ArrayList<Integer>());
+            }
+            raterAverageMap.get(raterName).add(r.getMovieRating());
+        }
 
-        Rater      : Margaret Shone
-        Avg Rating : 8.5
-         */
+        //Need to sort map... so probably need to make a new map and then sort. 
+
+        //Print Map
+        System.out.println("");
+        System.out.println(" - - - - -  R A T E R   A V E R A G E  (still need to sort before print) - - - - - ");
+        System.out.println("");
+
+        int counter = 0;
+        for(String rater : raterAverageMap.keySet()){
+            System.out.println("Rater      : " + rater);
+            int numOfRatings = raterAverageMap.get(rater).size();
+            Double totalRating = 0.0;
+            for (int i : raterAverageMap.get(rater)){
+                totalRating += i;
+            }
+            double avgRating = totalRating / numOfRatings;
+            System.out.println("Avg Rating : " + avgRating);
+            System.out.println("");
+            counter++;
+            if(counter == 9){
+                break;
+            }
+
+        }
     }
-
-   }
+}
    
 
 
