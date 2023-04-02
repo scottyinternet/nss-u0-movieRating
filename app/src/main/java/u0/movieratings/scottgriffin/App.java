@@ -5,68 +5,80 @@ package u0.movieratings.scottgriffin;
 import java.io.IOException;
 import java.util.*;
 
+
 public class App {
     public static void main(String[] args) throws IOException {
         RatingReader ratingReader = new RatingReader("movie-ratings.csv");
 
         List<Rating> list = ratingReader.getAllRatings();
-        printAllRatings(list);
-        averageRating(list);
-        highestRater(list);
-        raterAverage(list);
+
+        //   M O V I E   A V E R A G E   R A T I N G   C A L L S   (phase 5)
+        Map<String, Double> movieAvgRatingMap = averageRating(list);
+        printMovieAvgRatingMap(movieAvgRatingMap);
+
+        //   H I G H E S T   R A T E R   C A L L S   (phase 6) 
+        Map<String, List<Rating>> highestRaterMap = highestRater(list);
+        printHighestRaterMap(highestRaterMap);
+
+        //   H I G H E S T   A N D   L O W E S T   1 0   R A T E R   C A L L S   (phase 7 + challenge 1)
+        Map<String, Double> raterAverageMap = raterAverage(list);
+        List<Double> averagesList = addAveragesToList(raterAverageMap);  
+        printHighestRaters(averagesList, raterAverageMap);    
+        printLowestRaters(averagesList, raterAverageMap);
 
     }  //  - - - -  E N D   O F   M A I N  - - - -   
 
 
-    //  P R I N T   A L L   R A T I N G S    (checks if RatingReader populated rating list)  
-    public static void printAllRatings(List<Rating> list){
-        System.out.println("");
-        System.out.println(" - - - - -  P R I N T   A L L   R A T I N G S  - - - - - ");
-        System.out.println("");
 
-        for (Rating r : list) {
-            System.out.println(r);
-        }
-    }
-
+    
     //  A V E R A G E   R A T I N G
-    public static void averageRating(List<Rating> list){
-        Map<String, List<Integer>> averageRatings = new HashMap<String, List<Integer>>();
-        System.out.println("");
-        System.out.println(" - - - - -  A V E R A G E   R A T I N G  - - - - - ");
-        System.out.println("");
+    public static Map<String, Double> averageRating(List<Rating> list){
+        Map<String, List<Integer>> allRatingsMap = new HashMap<String, List<Integer>>();
+        Map<String, Double> movieAvgRatingMap = new HashMap<>();
 
-        //Populate Map
+        //Populate allRatingsMap with list
         for (Rating r :list){
             String movieName = r.getMovieName();
-            if (!averageRatings.containsKey(movieName)) {
-                averageRatings.put(movieName, new ArrayList<Integer>());
+            if (!allRatingsMap.containsKey(movieName)) {
+                allRatingsMap.put(movieName, new ArrayList<Integer>());
             }
-            averageRatings.get(movieName).add(r.getMovieRating());
+            allRatingsMap.get(movieName).add(r.getMovieRating());
         }
 
-            //PRINT MAP (WITHIN METHOD)
-            for(String title : averageRatings.keySet()){
-                System.out.println("Movie Name     : " + title);
-                int numOfRatings = averageRatings.get(title).size();
-                Double totalRating = 0.0;
-
-                for (int i : averageRatings.get(title)){
-                    totalRating += i;
-                }
-                double avgRating = totalRating / numOfRatings;
-                System.out.println("Average Rating : " + avgRating);
-                System.out.println("");                
+        //Calculate Averages and populate movieAverageMap
+        for(String title : allRatingsMap.keySet()){
+            int numOfRatings = allRatingsMap.get(title).size();
+            Double totalRating = 0.0;
+            for (int i : allRatingsMap.get(title)){
+                totalRating += i;
             }
+            double avgRating = totalRating / numOfRatings;
+            movieAvgRatingMap.put(title, avgRating);
         }
 
-    //  H I G H E S T   R A T E R 
-    public static void highestRater(List<Rating> list){
+        return movieAvgRatingMap;
+    }
+
+    //   P R I N T   M O V I E   A V E R A G E   M A P 
+    public static void printMovieAvgRatingMap(Map<String, Double> movieAvgRatingMap){
+        System.out.println("");
+        System.out.println(" - - - - -   M O V I E   A V E R A G E   R A T I N G   - - - - - ");
+        System.out.println("");
+
+        for(String movieName : movieAvgRatingMap.keySet()){
+            System.out.println("Movie Name     : " + movieName);
+            System.out.println("Average Rating : " + movieAvgRatingMap.get(movieName));
+            System.out.println(""); 
+        }
+
+
+               
+        
+    }
+    
+    //  H I G H E S T   R A T E R    
+    public static Map<String, List<Rating>> highestRater(List<Rating> list){
         Map<String, List<Rating>> highestRaterMap = new HashMap<>();
-        System.out.println("");
-        System.out.println(" - - - - -  H I G H E S T   R A T E R  - - - - - ");
-        System.out.println("");
-
 
         //populate map
         for(Rating r : list){
@@ -91,8 +103,14 @@ public class App {
                 //do nothing if rating less than current high
             }
         }
+        return highestRaterMap;
+    } 
 
-        //print map
+    //   P R I N T   H I G H E S T   R A T E R   M A P 
+    public static void printHighestRaterMap(Map<String, List<Rating>> highestRaterMap){
+        System.out.println("");
+        System.out.println(" - - - - -  H I G H E S T   R A T E R  - - - - - ");
+        System.out.println("");
         for(String title : highestRaterMap.keySet()){
             System.out.println("Movie Name    : " + title);
 
@@ -107,48 +125,93 @@ public class App {
             System.out.println("Highest Rater : " + output);
             System.out.println("");
         }
-    } 
+    }
 
     //  R A T E R   A V E R A G E
-    public static void raterAverage(List<Rating> list){
-        Map<String, List<Integer>> raterAverageMap = new HashMap<String, List<Integer>>();
+    public static Map<String, Double> raterAverage(List<Rating> list){
+        Map<String, List<Integer>> allRatingsMap = new HashMap<String, List<Integer>>();
+        Map<String, Double> raterAverageMap = new HashMap<>();
 
-        //Populate Map
+        //Populate AllRatingsMap
         for (Rating r :list){
             String raterName = r.getRaterName();
-            if (!raterAverageMap.containsKey(raterName)) {
-                raterAverageMap.put(raterName, new ArrayList<Integer>());
+            if (!allRatingsMap.containsKey(raterName)) {
+                allRatingsMap.put(raterName, new ArrayList<Integer>());
             }
-            raterAverageMap.get(raterName).add(r.getMovieRating());
+            //Populate raterAverageMap with rater names
+            allRatingsMap.get(raterName).add(r.getMovieRating());
         }
 
-        //Need to sort map... so probably need to make a new map and then sort. 
-
-        //Print Map
-        System.out.println("");
-        System.out.println(" - - - - -  R A T E R   A V E R A G E  (still need to sort before print) - - - - - ");
-        System.out.println("");
-
-        int counter = 0;
-        for(String rater : raterAverageMap.keySet()){
-            System.out.println("Rater      : " + rater);
-            int numOfRatings = raterAverageMap.get(rater).size();
+        //calculate average and add to averages map
+        for (String rater : allRatingsMap.keySet()){
+            List<Integer> ratingsList = allRatingsMap.get(rater);
             Double totalRating = 0.0;
-            for (int i : raterAverageMap.get(rater)){
-                totalRating += i;
+            int numOfRatings = 0;
+            for(int rating : ratingsList){
+                totalRating += rating;
+                numOfRatings++;
             }
-            double avgRating = totalRating / numOfRatings;
+            Double avgRating = totalRating / numOfRatings;
+            raterAverageMap.put(rater, avgRating);
+        }
+        return raterAverageMap;        
+    }
+
+    //  A D D   V A L U E S   T O   L I S T 
+    public static List<Double> addAveragesToList(Map<String, Double> raterAverageMap){
+        List<Double> averagesList = new ArrayList<>();
+        for (Double rating : raterAverageMap.values()){
+            averagesList.add(rating);
+        }
+        return averagesList;
+    }
+
+    //  P R I N T   H I G H E S T   R A T E R S  
+    public static void printHighestRaters(List<Double> averagesList, Map<String, Double> raterAverageMap){
+        System.out.println("");
+        System.out.println(" - - - - -   H I G H E S T   1 0   R A T E R S   - - - - - ");
+        System.out.println("");
+        Collections.sort(averagesList, Collections.reverseOrder());
+        for(int i = 0; i < 10; i++){
+            Double avgRating = averagesList.get(i);
+            for(String rater : raterAverageMap.keySet()){
+                if (raterAverageMap.get(rater) == avgRating){
+                    System.out.println("Rater      : " + rater);
+                }
+            }
             System.out.println("Avg Rating : " + avgRating);
             System.out.println("");
-            counter++;
-            if(counter == 9){
-                break;
-            }
+        }
+    
+    }
 
+    //  P R I N T   L O W E S T   R A T E R S
+    public static void printLowestRaters(List<Double> averagesList, Map<String, Double> raterAverageMap){
+        System.out.println("");
+        System.out.println(" - - - - -   L O W E S T   1 0   R A T E R S   - - - - - ");
+        System.out.println("");
+        Collections.sort(averagesList);
+        
+        for(int i = 0; i < 10; i++){
+            Double avgRating = averagesList.get(i);
+            for(String rater : raterAverageMap.keySet()){
+                if (raterAverageMap.get(rater) == avgRating){
+                    System.out.println("Rater      : " + rater);
+                }
+            }
+            System.out.println("Avg Rating : " + avgRating);
+            System.out.println("");
+        }
+    }
+
+    //  P R I N T   A L L   R A T I N G S
+    public static void printAllRatings(List<Rating> list){
+        System.out.println("");
+        System.out.println(" - - - - -  P R I N T   A L L   R A T I N G S  - - - - - ");
+        System.out.println("");
+
+        for (Rating r : list) {
+            System.out.println(r);
         }
     }
 }
-   
-
-
-
