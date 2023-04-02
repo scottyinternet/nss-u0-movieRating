@@ -18,7 +18,7 @@ public class App {
         //   H I G H E S T  /  L O W E S T   R A T E R S   F O R  E A C H   M O V I E   C A L L S    
         Map<String, List<Rating>> highestRaterMap = highestRater(ratingsList);   //phase 6
         Map<String, List<Rating>> lowestRaterMap = lowestRater(ratingsList);     //challenge 2
-        printHighLowRatersMaps(highestRaterMap, true);    // used the same method for high/low prints, not sure if that is best solution..
+        printHighLowRatersMaps(highestRaterMap, true);                           // used the same method for high/low prints, not sure if that is best solution..
         printHighLowRatersMaps(lowestRaterMap, false);
 
         //   H I G H E S T  /  L O W E S T   1 0   R A T E R   C A L L S   
@@ -229,13 +229,13 @@ public class App {
         System.out.println("");
         
         for(int i = 0; i < 10; i++){
-            Double avgRating = averagesList.get(i);
+            Double ratersAvg = averagesList.get(i);
             for(String rater : raterAverageMap.keySet()){
-                if (raterAverageMap.get(rater) == avgRating){
+                if (raterAverageMap.get(rater) == ratersAvg){
                     System.out.println("Rater      : " + rater);
                 }
             }
-            System.out.println("Avg Rating : " + avgRating);
+            System.out.println("Avg Rating : " + ratersAvg);
             System.out.println("");
         }
     }
